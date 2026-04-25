@@ -11,18 +11,11 @@ public class Item
 
     public Transform View { get; private set; }
 
-
-    public virtual void SetView()
+    public virtual void SetView(GameManager gm)
     {
-        string prefabname = GetPrefabName();
-
-        if (!string.IsNullOrEmpty(prefabname))
+        if (gm.preloadResources.TryGetValue(GetPrefabName(), out var result))
         {
-            GameObject prefab = Resources.Load<GameObject>(prefabname);
-            if (prefab)
-            {
-                View = GameObject.Instantiate(prefab).transform;
-            }
+            View = GameObject.Instantiate(result).transform;
         }
     }
 

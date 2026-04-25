@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Core.Utilities;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -45,13 +46,30 @@ public class GameManager : MonoBehaviour
 
     private LevelCondition m_levelCondition;
 
+    public Dictionary<string, GameObject> preloadResources;
+
     private void Awake()
     {
+        preloadResources = new Dictionary<string, GameObject>
+        {
+            { Constants.PREFAB_NORMAL_TYPE_ONE, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_ONE) },
+            { Constants.PREFAB_NORMAL_TYPE_TWO, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_TWO) },
+            { Constants.PREFAB_NORMAL_TYPE_THREE, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_THREE) },
+            { Constants.PREFAB_NORMAL_TYPE_FOUR, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_FOUR) },
+            { Constants.PREFAB_NORMAL_TYPE_FIVE, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_FIVE) },
+            { Constants.PREFAB_NORMAL_TYPE_SIX, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_SIX) },
+            { Constants.PREFAB_NORMAL_TYPE_SEVEN, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_SEVEN) },
+            { Constants.PREFAB_BONUS_HORIZONTAL, Resources.Load<GameObject>(Constants.PREFAB_BONUS_HORIZONTAL) },
+            { Constants.PREFAB_BONUS_VERTICAL, Resources.Load<GameObject>(Constants.PREFAB_BONUS_VERTICAL) },
+            { Constants.PREFAB_BONUS_BOMB, Resources.Load<GameObject>(Constants.PREFAB_BONUS_BOMB) },
+        };
+        
         State = eStateGame.SETUP;
 
         m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
 
         m_uiMenu = FindObjectOfType<UIMainManager>();
+        
         m_uiMenu.Setup(this);
     }
 

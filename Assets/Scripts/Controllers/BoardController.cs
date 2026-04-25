@@ -30,6 +30,8 @@ public class BoardController : MonoBehaviour
     private bool m_hintIsShown;
 
     private bool m_gameOver;
+    
+    public GameManager GameMng => m_gameManager;
 
     public void StartGame(GameManager gameManager, GameSettings gameSettings)
     {
@@ -41,14 +43,14 @@ public class BoardController : MonoBehaviour
 
         m_cam = Camera.main;
 
-        m_board = new Board(this.transform, gameSettings);
+        m_board = new Board(this, gameSettings);
 
-        Fill();
+        Fill(gameManager);
     }
 
-    private void Fill()
+    private void Fill(GameManager gm)
     {
-        m_board.Fill();
+        m_board.Fill(gm);
         FindMatchesAndCollapse();
     }
 
@@ -251,7 +253,7 @@ public class BoardController : MonoBehaviour
 
         yield return new WaitForSeconds(0.2f);
 
-        m_board.Fill();
+        m_board.Fill(m_gameManager);
 
         yield return new WaitForSeconds(0.2f);
 

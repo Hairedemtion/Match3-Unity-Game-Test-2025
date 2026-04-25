@@ -22,12 +22,16 @@ public class Board
     private Cell[,] m_cells;
 
     private Transform m_root;
+    
+    private BoardController m_boardController;
 
     private int m_matchMin;
 
-    public Board(Transform transform, GameSettings gameSettings)
+    public Board(BoardController boardCtrl, GameSettings gameSettings)
     {
-        m_root = transform;
+        m_boardController = boardCtrl;
+        
+        m_root = boardCtrl.transform;
 
         m_matchMin = gameSettings.MatchesMin;
 
@@ -72,7 +76,7 @@ public class Board
 
     }
 
-    internal void Fill()
+    internal void Fill(GameManager gameMng)
     {
         for (int x = 0; x < boardSizeX; x++)
         {
@@ -101,7 +105,7 @@ public class Board
                 }
 
                 item.SetType(Utils.GetRandomNormalTypeExcept(types.ToArray()));
-                item.SetView();
+                item.SetView(gameMng);
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
@@ -148,7 +152,7 @@ public class Board
                 NormalItem item = new NormalItem();
 
                 item.SetType(Utils.GetRandomNormalType());
-                item.SetView();
+                item.SetView(m_boardController.GameMng);
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
@@ -282,7 +286,7 @@ public class Board
                 cellToConvert = matches[rnd];
             }
 
-            item.SetView();
+            item.SetView(m_boardController.GameMng);
             item.SetViewRoot(m_root);
 
             cellToConvert.Free();
