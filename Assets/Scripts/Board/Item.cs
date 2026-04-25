@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Core.Pooling;
 using UnityEngine;
 using DG.Tweening;
@@ -14,12 +12,15 @@ public class Item
 
     private Vector3 m_defaultScale;
 
+    private SpriteRenderer m_SprRenderer;
+
     public virtual void SetView(GameManager gm, Transform root)
     {
         if (gm.preloadResources.TryGetValue(GetPrefabName(), out var result))
         {
             m_defaultScale = result.transform.localScale;
             View = ObjectPool.Get(result, root).transform;
+            m_SprRenderer = View.GetComponent<SpriteRenderer>();
         }
     }
 
@@ -57,10 +58,9 @@ public class Item
     {
         if (View == null) return;
 
-        SpriteRenderer sp = View.GetComponent<SpriteRenderer>();
-        if (sp)
+        if (m_SprRenderer)
         {
-            sp.sortingOrder = 1;
+            m_SprRenderer.sortingOrder = 1;
         }
     }
 
@@ -69,10 +69,9 @@ public class Item
     {
         if (View == null) return;
 
-        SpriteRenderer sp = View.GetComponent<SpriteRenderer>();
-        if (sp)
+        if (m_SprRenderer)
         {
-            sp.sortingOrder = 0;
+            m_SprRenderer.sortingOrder = 0;
         }
 
     }
