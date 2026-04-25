@@ -46,6 +46,8 @@ public class GameManager : MonoBehaviour
 
     public Dictionary<string, GameObject> preloadResources;
 
+    public ItemSkin itemSkin { get; private set; }
+
     private void Awake()
     {
         preloadResources = new Dictionary<string, GameObject>
@@ -62,6 +64,8 @@ public class GameManager : MonoBehaviour
             { Constants.PREFAB_BONUS_VERTICAL, Resources.Load<GameObject>(Constants.PREFAB_BONUS_VERTICAL) },
             { Constants.PREFAB_BONUS_BOMB, Resources.Load<GameObject>(Constants.PREFAB_BONUS_BOMB) },
         };
+
+        itemSkin = Resources.Load<ItemSkin>(Constants.ITEM_SKIN_PATH);
         
         State = eStateGame.SETUP;
 

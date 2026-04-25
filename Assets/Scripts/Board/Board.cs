@@ -28,8 +28,12 @@ public class Board
 
     private int m_matchMin;
 
-    public Board(BoardController boardCtrl, GameSettings gameSettings)
+    private Sprite[] m_skins;
+    
+    public Board(BoardController boardCtrl, GameSettings gameSettings, Sprite[] skins)
     {
+        m_skins = skins;
+        
         m_boardController = boardCtrl;
         
         m_root = boardCtrl.transform;
@@ -102,8 +106,8 @@ public class Board
                     }
                 }
 
-                item.SetType(Utils.GetRandomNormalTypeExcept(types.ToArray()));
                 item.SetView(gameMng, m_root);
+                item.SetType(Utils.GetRandomNormalTypeExcept(types.ToArray()), m_skins);
 
                 cell.Assign(item);
                 cell.ApplyItemPosition(false);
@@ -148,8 +152,8 @@ public class Board
 
                 NormalItem item = new NormalItem();
 
-                item.SetType(Utils.GetRandomNormalType());
                 item.SetView(m_boardController.GameMng, m_root);
+                item.SetType(Utils.GetRandomNormalType(), m_skins);
 
                 cell.Assign(item);
                 cell.ApplyItemPosition(true);

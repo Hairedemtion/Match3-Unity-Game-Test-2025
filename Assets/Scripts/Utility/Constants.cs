@@ -2,6 +2,8 @@
 {
     public const string GAME_SETTINGS_PATH = "gamesettings";
 
+    public const string ITEM_SKIN_PATH = "ItemSkin_Fish";
+
     public const string PREFAB_CELL_BACKGROUND = "prefabs/cellBackground";
 
     public const string PREFAB_NORMAL_TYPE_ONE = "prefabs/itemNormal01";

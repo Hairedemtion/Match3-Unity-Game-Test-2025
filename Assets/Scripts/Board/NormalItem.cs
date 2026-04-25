@@ -17,9 +17,10 @@ public class NormalItem : Item
 
     public eNormalType ItemType;
 
-    public void SetType(eNormalType type)
+    public void SetType(eNormalType type, Sprite[] skins)
     {
         ItemType = type;
+        m_SprRenderer.sprite = skins[(int)type];
     }
 
     protected override string GetPrefabName()

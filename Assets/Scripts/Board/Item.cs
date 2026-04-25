@@ -12,7 +12,7 @@ public class Item
 
     private Vector3 m_defaultScale;
 
-    private SpriteRenderer m_SprRenderer;
+    protected SpriteRenderer m_SprRenderer;
 
     public virtual void SetView(GameManager gm, Transform root)
     {

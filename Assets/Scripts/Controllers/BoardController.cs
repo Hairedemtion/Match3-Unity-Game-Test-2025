@@ -43,7 +43,7 @@ public class BoardController : MonoBehaviour
 
         m_cam = Camera.main;
 
-        m_board = new Board(this, gameSettings);
+        m_board = new Board(this, gameSettings, gameManager.itemSkin.skins);
 
         Fill(gameManager);
     }
