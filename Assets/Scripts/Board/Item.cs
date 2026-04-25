@@ -96,6 +96,7 @@ public class Item
             View.DOScale(0.1f, 0.1f).OnComplete(
                 () =>
                 {
+                    View.DOKill();
                     ObjectPool.Recycle(View.gameObject);
                     View = null;
                 }
@@ -127,6 +128,7 @@ public class Item
 
         if (View)
         {
+            View.DOKill();
             ObjectPool.Recycle(View.gameObject);
             View = null;
         }

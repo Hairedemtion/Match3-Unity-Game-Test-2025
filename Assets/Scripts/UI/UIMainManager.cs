@@ -99,6 +99,11 @@ public class UIMainManager : MonoBehaviour
         return null;
     }
 
+    internal void Restart()
+    {
+        m_gameManager.RestartGame();
+    }
+    
     internal void ShowPauseMenu()
     {
         m_gameManager.SetState(GameManager.eStateGame.PAUSE);

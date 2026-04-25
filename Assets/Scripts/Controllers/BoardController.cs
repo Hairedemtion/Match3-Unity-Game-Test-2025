@@ -283,6 +283,7 @@ public class BoardController : MonoBehaviour
 
     internal void Clear()
     {
+        m_hintIsShown = false;
         m_board.Clear();
     }
 

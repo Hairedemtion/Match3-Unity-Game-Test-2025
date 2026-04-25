@@ -34,7 +34,8 @@ public class GameManager : MonoBehaviour
             StateChangedAction(m_state);
         }
     }
-
+    
+    private eLevelMode m_levelMode;
 
     private GameSettings m_gameSettings;
 
@@ -84,6 +85,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(State == eStateGame.SETUP) return;
         if (m_boardController != null) m_boardController.Update();
     }
 
@@ -104,6 +106,7 @@ public class GameManager : MonoBehaviour
 
     public void LoadLevel(eLevelMode mode)
     {
+        m_levelMode = mode;
         m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_gameSettings);
 
@@ -123,6 +126,22 @@ public class GameManager : MonoBehaviour
         State = eStateGame.GAME_STARTED;
     }
 
+    public void RestartGame()
+    {
+        State = eStateGame.SETUP;
+        m_boardController.Clear();
+        m_boardController.StartGame(this, m_gameSettings);
+        
+        if (m_levelMode == eLevelMode.MOVES)
+        {
+            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), m_boardController);
+        }
+        else if (m_levelMode == eLevelMode.TIMER)
+        {
+            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), this);
+        }
+    }
+    
     public void GameOver()
     {
         StartCoroutine(WaitBoardController());
