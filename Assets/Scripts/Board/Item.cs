@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Core.Pooling;
 using UnityEngine;
 using DG.Tweening;
 
@@ -11,11 +12,14 @@ public class Item
 
     public Transform View { get; private set; }
 
-    public virtual void SetView(GameManager gm)
+    private Vector3 m_defaultScale;
+
+    public virtual void SetView(GameManager gm, Transform root)
     {
         if (gm.preloadResources.TryGetValue(GetPrefabName(), out var result))
         {
-            View = GameObject.Instantiate(result).transform;
+            m_defaultScale = result.transform.localScale;
+            View = ObjectPool.Get(result, root).transform;
         }
     }
 
@@ -77,9 +81,8 @@ public class Item
     {
         if (View == null) return;
 
-        Vector3 scale = View.localScale;
         View.localScale = Vector3.one * 0.1f;
-        View.DOScale(scale, 0.1f);
+        View.DOScale(m_defaultScale, 0.1f);
     }
 
     internal virtual bool IsSameType(Item other)
@@ -94,10 +97,10 @@ public class Item
             View.DOScale(0.1f, 0.1f).OnComplete(
                 () =>
                 {
-                    GameObject.Destroy(View.gameObject);
+                    ObjectPool.Recycle(View.gameObject);
                     View = null;
                 }
-                );
+            );
         }
     }
 
@@ -125,7 +128,7 @@ public class Item
 
         if (View)
         {
-            GameObject.Destroy(View.gameObject);
+            ObjectPool.Recycle(View.gameObject);
             View = null;
         }
     }

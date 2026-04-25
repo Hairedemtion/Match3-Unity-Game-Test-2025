@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Pooling;
 using UnityEngine;
 
 public class Board
@@ -45,35 +46,32 @@ public class Board
 
     private void CreateBoard()
     {
-        Vector3 origin = new Vector3(-boardSizeX * 0.5f + 0.5f, -boardSizeY * 0.5f + 0.5f, 0f);
-        GameObject prefabBG = Resources.Load<GameObject>(Constants.PREFAB_CELL_BACKGROUND);
-        for (int x = 0; x < boardSizeX; x++)
+        if (m_boardController.GameMng.preloadResources.TryGetValue(Constants.PREFAB_CELL_BACKGROUND, out var prefabBG))
         {
-            for (int y = 0; y < boardSizeY; y++)
+            Vector3 origin = new Vector3(-boardSizeX * 0.5f + 0.5f, -boardSizeY * 0.5f + 0.5f, 0f);
+            for (int x = 0; x < boardSizeX; x++)
             {
-                GameObject go = GameObject.Instantiate(prefabBG);
-                go.transform.position = origin + new Vector3(x, y, 0f);
-                go.transform.SetParent(m_root);
+                for (int y = 0; y < boardSizeY; y++)
+                {
+                    Cell cell = ObjectPool.Get(prefabBG, origin + new Vector3(x, y, 0f), Quaternion.identity, m_root).GetComponent<Cell>();
+                    cell.Setup(x, y);
 
-                Cell cell = go.GetComponent<Cell>();
-                cell.Setup(x, y);
+                    m_cells[x, y] = cell;
+                }
+            }
 
-                m_cells[x, y] = cell;
+            //set neighbours
+            for (int x = 0; x < boardSizeX; x++)
+            {
+                for (int y = 0; y < boardSizeY; y++)
+                {
+                    if (y + 1 < boardSizeY) m_cells[x, y].NeighbourUp = m_cells[x, y + 1];
+                    if (x + 1 < boardSizeX) m_cells[x, y].NeighbourRight = m_cells[x + 1, y];
+                    if (y > 0) m_cells[x, y].NeighbourBottom = m_cells[x, y - 1];
+                    if (x > 0) m_cells[x, y].NeighbourLeft = m_cells[x - 1, y];
+                }
             }
         }
-
-        //set neighbours
-        for (int x = 0; x < boardSizeX; x++)
-        {
-            for (int y = 0; y < boardSizeY; y++)
-            {
-                if (y + 1 < boardSizeY) m_cells[x, y].NeighbourUp = m_cells[x, y + 1];
-                if (x + 1 < boardSizeX) m_cells[x, y].NeighbourRight = m_cells[x + 1, y];
-                if (y > 0) m_cells[x, y].NeighbourBottom = m_cells[x, y - 1];
-                if (x > 0) m_cells[x, y].NeighbourLeft = m_cells[x - 1, y];
-            }
-        }
-
     }
 
     internal void Fill(GameManager gameMng)
@@ -105,8 +103,7 @@ public class Board
                 }
 
                 item.SetType(Utils.GetRandomNormalTypeExcept(types.ToArray()));
-                item.SetView(gameMng);
-                item.SetViewRoot(m_root);
+                item.SetView(gameMng, m_root);
 
                 cell.Assign(item);
                 cell.ApplyItemPosition(false);
@@ -152,8 +149,7 @@ public class Board
                 NormalItem item = new NormalItem();
 
                 item.SetType(Utils.GetRandomNormalType());
-                item.SetView(m_boardController.GameMng);
-                item.SetViewRoot(m_root);
+                item.SetView(m_boardController.GameMng, m_root);
 
                 cell.Assign(item);
                 cell.ApplyItemPosition(true);
@@ -286,8 +282,7 @@ public class Board
                 cellToConvert = matches[rnd];
             }
 
-            item.SetView(m_boardController.GameMng);
-            item.SetViewRoot(m_root);
+            item.SetView(m_boardController.GameMng, m_root);
 
             cellToConvert.Free();
             cellToConvert.Assign(item);
@@ -673,7 +668,7 @@ public class Board
                 Cell cell = m_cells[x, y];
                 cell.Clear();
 
-                GameObject.Destroy(cell.gameObject);
+                ObjectPool.Recycle(cell.gameObject);
                 m_cells[x, y] = null;
             }
         }

@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Core.Utilities;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -39,7 +38,6 @@ public class GameManager : MonoBehaviour
 
     private GameSettings m_gameSettings;
 
-
     private BoardController m_boardController;
 
     private UIMainManager m_uiMenu;
@@ -52,6 +50,7 @@ public class GameManager : MonoBehaviour
     {
         preloadResources = new Dictionary<string, GameObject>
         {
+            { Constants.PREFAB_CELL_BACKGROUND, Resources.Load<GameObject>(Constants.PREFAB_CELL_BACKGROUND) },
             { Constants.PREFAB_NORMAL_TYPE_ONE, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_ONE) },
             { Constants.PREFAB_NORMAL_TYPE_TWO, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_TWO) },
             { Constants.PREFAB_NORMAL_TYPE_THREE, Resources.Load<GameObject>(Constants.PREFAB_NORMAL_TYPE_THREE) },
