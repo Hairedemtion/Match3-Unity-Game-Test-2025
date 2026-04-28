@@ -140,6 +140,8 @@ public class GameManager : MonoBehaviour
         {
             m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), this);
         }
+
+        State = eStateGame.GAME_STARTED;
     }
     
     public void GameOver()
