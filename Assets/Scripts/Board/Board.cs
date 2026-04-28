@@ -151,14 +151,120 @@ public class Board
                 if (!cell.IsEmpty) continue;
 
                 NormalItem item = new NormalItem();
-
                 item.SetView(m_boardController.GameMng, m_root);
-                item.SetType(Utils.GetRandomNormalType(), m_skins);
+
+                // Get smart type that avoids matches and balances board
+                NormalItem.eNormalType smartType = GetSmartItemTypeForCell(cell);
+                item.SetType(smartType, m_skins);
 
                 cell.Assign(item);
                 cell.ApplyItemPosition(true);
             }
         }
+    }
+
+    /// <summary>
+    /// Get smart item type that:
+    /// 1. Avoids creating matches with 4 neighbors
+    /// 2. Prioritizes types with lower count on board
+    /// </summary>
+    private NormalItem.eNormalType GetSmartItemTypeForCell(Cell cell)
+    {
+        // Get types to exclude (neighbors)
+        List<NormalItem.eNormalType> excludeTypes = GetNeighborTypes(cell);
+
+        // Get all available types
+        Array allTypes = Enum.GetValues(typeof(NormalItem.eNormalType));
+        List<NormalItem.eNormalType> availableTypes = new List<NormalItem.eNormalType>();
+
+        foreach (NormalItem.eNormalType type in allTypes)
+        {
+            if (!excludeTypes.Contains(type))
+            {
+                availableTypes.Add(type);
+            }
+        }
+
+        // If no available types (unlikely), return random
+        if (availableTypes.Count == 0)
+        {
+            return Utils.GetRandomNormalType();
+        }
+
+        // Count items on board by type
+        Dictionary<NormalItem.eNormalType, int> typeCounts = CountItemsByType();
+
+        // Sort available types by count (ascending - prefer less common types)
+        availableTypes.Sort((a, b) =>
+        {
+            int countA = typeCounts.ContainsKey(a) ? typeCounts[a] : 0;
+            int countB = typeCounts.ContainsKey(b) ? typeCounts[b] : 0;
+            return countA.CompareTo(countB);
+        });
+
+        // Take top 3 least common types and randomly choose one
+        int topN = Mathf.Min(3, availableTypes.Count);
+        int randomIndex = UnityEngine.Random.Range(0, topN);
+
+        return availableTypes[randomIndex];
+    }
+
+    /// <summary>
+    /// Get types of all 4 neighbors (up, down, left, right)
+    /// </summary>
+    private List<NormalItem.eNormalType> GetNeighborTypes(Cell cell)
+    {
+        List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
+
+        Cell[] neighbors = new Cell[]
+        {
+            cell.NeighbourUp,
+            cell.NeighbourBottom,
+            cell.NeighbourLeft,
+            cell.NeighbourRight
+        };
+
+        foreach (Cell neighbor in neighbors)
+        {
+            if (neighbor != null && !neighbor.IsEmpty && neighbor.Item is NormalItem normalItem)
+            {
+                if (!types.Contains(normalItem.ItemType))
+                {
+                    types.Add(normalItem.ItemType);
+                }
+            }
+        }
+
+        return types;
+    }
+
+    /// <summary>
+    /// Count all normal items on board by type
+    /// </summary>
+    private Dictionary<NormalItem.eNormalType, int> CountItemsByType()
+    {
+        Dictionary<NormalItem.eNormalType, int> counts = new Dictionary<NormalItem.eNormalType, int>();
+
+        for (int x = 0; x < boardSizeX; x++)
+        {
+            for (int y = 0; y < boardSizeY; y++)
+            {
+                Cell cell = m_cells[x, y];
+                if (!cell.IsEmpty && cell.Item is NormalItem normalItem)
+                {
+                    if (counts.ContainsKey(normalItem.ItemType))
+                    {
+                        counts[normalItem.ItemType]++;
+                    }
+                    else
+                    {
+                        counts[normalItem.ItemType] = 1;
+                    }
+                }
+            }
+        }
+
+        return counts;
     }
 
     internal void ExplodeAllItems()
